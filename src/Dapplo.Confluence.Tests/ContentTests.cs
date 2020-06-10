@@ -8,6 +8,9 @@ using System.Linq;
 using System.Threading.Tasks;
 using Dapplo.Confluence.Entities;
 using Dapplo.Confluence.Query;
+using Dapplo.HttpExtensions;
+using Dapplo.HttpExtensions.WinForms.ContentConverter;
+using Dapplo.HttpExtensions.Wpf.ContentConverter;
 using Dapplo.Log;
 using Xunit;
 using Xunit.Abstractions;
@@ -24,6 +27,16 @@ namespace Dapplo.Confluence.Tests
         private static readonly LogSource Log = new LogSource();
         public ContentTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
         {
+            // Add BitmapHttpContentConverter if it was not yet added
+            if (HttpExtensionsGlobals.HttpContentConverters.All(x => x.GetType() != typeof(BitmapHttpContentConverter)))
+            {
+                HttpExtensionsGlobals.HttpContentConverters.Add(BitmapHttpContentConverter.Instance.Value);
+            }
+            // Add BitmapSourceHttpContentConverter if it was not yet added
+            if (HttpExtensionsGlobals.HttpContentConverters.All(x => x.GetType() != typeof(BitmapSourceHttpContentConverter)))
+            {
+                HttpExtensionsGlobals.HttpContentConverters.Add(BitmapSourceHttpContentConverter.Instance.Value);
+            }
         }
         
         [Fact]
