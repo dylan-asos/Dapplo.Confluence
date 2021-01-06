@@ -202,5 +202,36 @@ namespace Dapplo.Confluence
             var response = await attachmentsUri.GetAsAsync<HttpResponse<Content, Error>>(cancellationToken).ConfigureAwait(false);
             return response.HandleErrors();
         }
+
+        /// <summary>
+        ///     Update data (Content) of existing attachment
+        /// </summary>
+        /// <typeparam name="TContent">The content to upload</typeparam>
+        /// <param name="confluenceClient">IAttachmentDomain to bind the extension method to</param>
+        /// <param name="contentId">content to add the attachment to</param>
+        /// <param name="attachmentId">Id of attachment to update</param>
+        /// <param name="content">content of type TContent for the attachment</param>
+        /// <param name="filename">Filename of the attachment</param>
+        /// <param name="comment">Comment in the attachments information</param>
+        /// <param name="contentType">Content-Type for the content, or null</param>
+        /// <param name="cancellationToken">CancellationToken</param>
+        /// <returns></returns>
+        public static async Task<Result<Content>> UpdateDataAsync<TContent>(this IAttachmentDomain confluenceClient, long contentId, long attachmentId, TContent content, string filename, string comment = null, string contentType = null, CancellationToken cancellationToken = default)
+            where TContent : class
+        {
+            var attachment = new AttachmentContainer<TContent>
+            {
+                Comment = comment,
+                FileName = filename,
+                Content = content,
+                ContentType = contentType,
+            };
+            confluenceClient.Behaviour.MakeCurrent();
+
+            var postAttachmentUri = confluenceClient.ConfluenceApiUri.AppendSegments("content", contentId, "child", "attachment", attachmentId, "data");
+            var response = await postAttachmentUri.PostAsync<HttpResponse<Result<Content>, Error>>(attachment, cancellationToken).ConfigureAwait(false);
+            return response.HandleErrors();
+        }
+
     }
 }
