@@ -98,7 +98,7 @@ namespace Dapplo.Confluence.Query
         /// <param name="clause">Clause</param>
         public static implicit operator string(Clause clause)
         {
-            return clause.ToString();
+            return clause?.ToString();
         }
 
         public override string ToString()

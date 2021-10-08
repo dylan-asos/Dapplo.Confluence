@@ -1,9 +1,12 @@
 ﻿// Copyright (c) Dapplo and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
+using System.Drawing;
+using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Dapplo.HttpExtensions.WinForms.ContentConverter;
 using Xunit;
 using Xunit.Abstractions;
 
@@ -72,6 +75,27 @@ namespace Dapplo.Confluence.Tests
             attachments = await ConfluenceTestClient.Attachment.GetAttachmentsAsync(testPageId);
             Assert.NotNull(attachments);
             Assert.True(attachments.Results.Count == 0);
+        }
+
+        /// <summary>
+        ///     Doesn't work yet, as deleting an attachment (with multiple versions) is not supported
+        ///     See <a href="https://jira.atlassian.com/browse/CONF-36015">CONF-36015</a>
+        /// </summary>
+        /// <returns></returns>
+        [Fact]
+        public async Task TestAttachBitmap()
+        {
+            const long testPageId = 550731777;
+
+
+            using Stream stream = File.OpenRead(@"D:\Projects\Dapplo.HttpExtensions\src\Dapplo.HttpExtensions.Tests\d.png");
+
+            var attachments = await ConfluenceTestClient.Attachment.AttachAsync(testPageId, stream, "streamed.png", "Just attached a bitmap");
+            Assert.NotNull(attachments);
+
+            attachments = await ConfluenceTestClient.Attachment.GetAttachmentsAsync(testPageId);
+            Assert.NotNull(attachments);
+            Assert.True(attachments.Results.Count > 0);
         }
     }
 }

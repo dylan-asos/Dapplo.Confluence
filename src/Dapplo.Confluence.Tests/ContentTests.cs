@@ -38,12 +38,24 @@ namespace Dapplo.Confluence.Tests
                 HttpExtensionsGlobals.HttpContentConverters.Add(BitmapSourceHttpContentConverter.Instance.Value);
             }
         }
-        
+
+        [Fact]
+        public async Task Test_IsDefault()
+        {
+            var query = Where.And(Where.Space.Is("TEST"), Where.Type.IsPage, Where.Title.Contains("Doesn't exist"));
+            var searchResults = await ConfluenceTestClient.Content.SearchAsync(query);
+
+            var searchResult = searchResults.FirstOrDefault();
+
+            Assert.True(searchResult == default);
+        }
+
         [Fact]
         public async Task Test_ContentVersion()
         {
             var query = Where.And(Where.Space.Is("TEST"), Where.Type.IsPage, Where.Title.Contains("Test Home"));
             var searchResults = await ConfluenceTestClient.Content.SearchAsync(query);
+
             var searchResult = searchResults.First();
             Log.Info().WriteLine("Version = {0}", searchResult.Version.Number);
             query = Where.Title.Contains("Test Home");

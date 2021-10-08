@@ -70,6 +70,10 @@ namespace Dapplo.Confluence.Entities
         /// <returns>TId</returns>
         public static implicit operator TId(BaseEntity<TId> entity)
         {
+            if (entity == null)
+            {
+                return default;
+            }
             return entity.Id;
         }
     }

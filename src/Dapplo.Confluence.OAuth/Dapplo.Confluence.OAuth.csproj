@@ -9,11 +9,11 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dapplo.HttpExtensions" Version="1.0.8" />
-    <PackageReference Include="Dapplo.HttpExtensions.JsonNet" Version="1.0.8" />
+    <PackageReference Include="Dapplo.HttpExtensions" Version="1.0.11" />
+    <PackageReference Include="Dapplo.HttpExtensions.JsonNet" Version="1.0.11" />
   </ItemGroup>
   <ItemGroup Condition="$(TargetFramework.StartsWith('net4')) Or $(TargetFramework.StartsWith('net5')) Or '$(TargetFramework)' == 'netcoreapp3.1'">
-    <PackageReference Include="Dapplo.HttpExtensions.OAuth" Version="1.0.8" />
+    <PackageReference Include="Dapplo.HttpExtensions.OAuth" Version="1.0.11" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Dapplo.Confluence\Dapplo.Confluence.csproj" />

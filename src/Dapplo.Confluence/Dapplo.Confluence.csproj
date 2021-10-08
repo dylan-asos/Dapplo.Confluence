@@ -9,7 +9,7 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="Dapplo.HttpExtensions" Version="1.0.8" />
-    <PackageReference Include="Dapplo.HttpExtensions.JsonNet" Version="1.0.8" />
+    <PackageReference Include="Dapplo.HttpExtensions" Version="1.0.11" />
+    <PackageReference Include="Dapplo.HttpExtensions.JsonNet" Version="1.0.11" />
   </ItemGroup>
 </Project>
