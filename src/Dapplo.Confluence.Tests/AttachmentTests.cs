@@ -82,13 +82,14 @@ namespace Dapplo.Confluence.Tests
         ///     See <a href="https://jira.atlassian.com/browse/CONF-36015">CONF-36015</a>
         /// </summary>
         /// <returns></returns>
-        [Fact]
+        //[Fact]
         public async Task TestAttachBitmap()
         {
             const long testPageId = 550731777;
 
+            // TODO: make the test work like this, delete all attachments, AttachAsync, UpdateAsync
 
-            using Stream stream = File.OpenRead(@"D:\Projects\Dapplo.HttpExtensions\src\Dapplo.HttpExtensions.Tests\d.png");
+            using Stream stream = File.OpenRead(@"TestFiles\icon.png");
 
             var attachments = await ConfluenceTestClient.Attachment.AttachAsync(testPageId, stream, "streamed.png", "Just attached a bitmap");
             Assert.NotNull(attachments);
