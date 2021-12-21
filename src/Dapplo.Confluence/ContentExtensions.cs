@@ -328,20 +328,18 @@ public static class ContentExtensions
     }
 
     /// <summary>
-    ///     Move the content specified by the contentId to the position relative to the targetId.
+    ///     Move the content specified by the contentId to the position relative to the targetContentId.
     ///     Documentation for this can be found <a href="https://developer.atlassian.com/cloud/confluence/rest/api-group-content---children-and-descendants/#api-wiki-rest-api-content-pageid-move-position-targetid-put">here</a>
     /// </summary>
     /// <param name="confluenceClient">IContentDomain to bind the extension method to</param>
-    /// <param name="contentId">string with the content ID to move</param>
-    /// <param name="position">Positions with position describing how to move to the targetId. Check the enum documentation for the possibilities and their effect.</param>
-    /// <param name="targetId">string with the target content ID, that is where the content needs to be moved to using the position for the relation.</param>
+    /// <param name="contentId">long with the content ID to move</param>
+    /// <param name="position">Positions with position describing how to move to the targetContentId. Check the enum documentation for the possibilities and their effect.</param>
+    /// <param name="targetContentId">long with the target content ID, that is where the content needs to be moved to using the position for the relation.</param>
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>string with the contentId</returns>
-    public static async Task<string> MoveAsync(this IContentDomain confluenceClient, string contentId, Positions position, string targetId, CancellationToken cancellationToken = default)
+    public static async Task<string> MoveAsync(this IContentDomain confluenceClient, long contentId, Positions position, long targetContentId, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(contentId)) throw new ArgumentNullException(nameof(contentId));
-        if (string.IsNullOrEmpty(targetId)) throw new ArgumentNullException(nameof(targetId));
-        var contentUri = confluenceClient.ConfluenceApiUri.AppendSegments("content", contentId, "move", position.ToString().ToLowerInvariant(), targetId);
+        var contentUri = confluenceClient.ConfluenceApiUri.AppendSegments("content", contentId, "move", position.ToString().ToLowerInvariant(), targetContentId);
 
         confluenceClient.Behaviour.MakeCurrent();
         var response = await contentUri.PutAsync<HttpResponse<string, Error>>(null, cancellationToken).ConfigureAwait(false);
@@ -353,14 +351,13 @@ public static class ContentExtensions
     ///     Documentation for this can be found <a href="https://developer.atlassian.com/cloud/confluence/rest/api-group-content---children-and-descendants/#api-wiki-rest-api-content-id-copy-post">here</a>
     /// </summary>
     /// <param name="confluenceClient">IContentDomain to bind the extension method to</param>
-    /// <param name="contentId">string with the Content ID to copy</param>
+    /// <param name="contentId">long with the Content ID to copy</param>
     /// <param name="copyContent">CopyContent describing how and where to copy the specified content</param>
     /// <param name="expandCopy">strings with the optional expand values</param>
     /// <param name="cancellationToken">CancellationToken</param>
     /// <returns>Content</returns>
-    public static async Task<Content> CopyAsync(this IContentDomain confluenceClient, string contentId, CopyContent copyContent, IEnumerable<string> expandCopy = null, CancellationToken cancellationToken = default)
+    public static async Task<Content> CopyAsync(this IContentDomain confluenceClient, long contentId, CopyContent copyContent, IEnumerable<string> expandCopy = null, CancellationToken cancellationToken = default)
     {
-        if (string.IsNullOrEmpty(contentId)) throw new ArgumentNullException(nameof(contentId));
         if (copyContent is null) throw new ArgumentNullException(nameof(copyContent));
         var contentUri = confluenceClient.ConfluenceApiUri.AppendSegments("content", contentId, "copy");
 

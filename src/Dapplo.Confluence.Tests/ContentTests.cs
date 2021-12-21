@@ -98,6 +98,34 @@ public class ContentTests : ConfluenceIntegrationTests
         await ConfluenceTestClient.Content.UpdateAsync(content);
     }
 
+
+    /// <summary>
+    ///     Test CopyAsync and MoveAsync
+    /// </summary>
+    [Fact]
+    public async Task TestContentCopyAndMove()
+    {
+        var copyContent = new CopyContent
+        {
+            Destination = new CopyPageRequestDestination
+            {
+                DestinationType = CopyDestinations.ParentPage,
+                Value = "" + 550731777
+            },
+            PageTitle = "Copied page"
+        };
+        var content = await ConfluenceTestClient.Content.CopyAsync(550731777, copyContent);
+        try
+        {
+            Assert.NotNull(content);
+            await ConfluenceTestClient.Content.MoveAsync(content.Id, Positions.Append, 550731777);
+        }
+        finally
+        {
+            await ConfluenceTestClient.Content.DeleteAsync(content.Id);
+        }
+    }
+
     /// <summary>
     ///     Test .GetChildren
     /// </summary>

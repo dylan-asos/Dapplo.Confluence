@@ -7,7 +7,7 @@ using Newtonsoft.Json;
 namespace Dapplo.Confluence.Entities;
 
 /// <summary>
-///     For instance when using delete
+///     The long running tasks
 /// </summary>
 [JsonObject]
 public class LongRunningTask
@@ -23,4 +23,16 @@ public class LongRunningTask
     /// </summary>
     [JsonProperty("links", DefaultValueHandling = DefaultValueHandling.Ignore)]
     public Links Links { get; set; }
+
+    /// <summary>
+    ///     Status of the task
+    /// </summary>
+    [JsonProperty("status ", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Status { get; set; }
+
+    /// <summary>
+    /// This was added later
+    /// </summary>
+    [JsonProperty("additionalDetails ", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public IDictionary<string, string> AdditionalDetails { get; set; }
 }
