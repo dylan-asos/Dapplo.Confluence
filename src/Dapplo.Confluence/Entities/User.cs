@@ -71,4 +71,10 @@ public class User : IUserIdentifier
     /// <inheritdoc cref="IUserIdentifier" />
     [JsonProperty("accountId")]
     public string AccountId { get; set; }
+
+    /// <summary>
+    ///     The timezone of the user
+    /// </summary>
+    [JsonProperty("timeZone", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string TimeZone { get; set; }
 }
