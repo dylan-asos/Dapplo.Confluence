@@ -4,25 +4,24 @@
 
 using Newtonsoft.Json;
 
-namespace Dapplo.Confluence.Entities
+namespace Dapplo.Confluence.Entities;
+
+/// <summary>
+///     Body
+///     See: https://docs.atlassian.com/confluence/REST/latest
+/// </summary>
+[JsonObject]
+public class Body
 {
     /// <summary>
-    ///     Body
-    ///     See: https://docs.atlassian.com/confluence/REST/latest
+    ///     Storage for content, used when creating
     /// </summary>
-    [JsonObject]
-    public class Body
-    {
-        /// <summary>
-        ///     Storage for content, used when creating
-        /// </summary>
-        [JsonProperty("storage", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public BodyContent Storage { get; set; }
+    [JsonProperty("storage", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public BodyContent Storage { get; set; }
 
-        /// <summary>
-        ///     View for Body
-        /// </summary>
-        [JsonProperty("view", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public BodyContent View { get; set; }
-    }
+    /// <summary>
+    ///     View for Body
+    /// </summary>
+    [JsonProperty("view", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public BodyContent View { get; set; }
 }

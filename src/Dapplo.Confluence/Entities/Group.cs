@@ -3,25 +3,24 @@
 
 using Newtonsoft.Json;
 
-namespace Dapplo.Confluence.Entities
+namespace Dapplo.Confluence.Entities;
+
+/// <summary>
+///     Group information
+///     See: https://docs.atlassian.com/confluence/REST/latest
+/// </summary>
+[JsonObject]
+public class Group
 {
     /// <summary>
-    ///     Group information
-    ///     See: https://docs.atlassian.com/confluence/REST/latest
+    ///     Name of the group
     /// </summary>
-    [JsonObject]
-    public class Group
-    {
-        /// <summary>
-        ///     Name of the group
-        /// </summary>
-        [JsonProperty("name", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Name { get; set; }
+    [JsonProperty("name", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Name { get; set; }
 
-        /// <summary>
-        ///     Type
-        /// </summary>
-        [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Type { get; set; }
-    }
+    /// <summary>
+    ///     Type
+    /// </summary>
+    [JsonProperty("type", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Type { get; set; }
 }

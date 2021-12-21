@@ -4,30 +4,29 @@
 
 using Newtonsoft.Json;
 
-namespace Dapplo.Confluence.Entities
+namespace Dapplo.Confluence.Entities;
+
+/// <summary>
+///     Contents of a space
+/// </summary>
+[JsonObject]
+public class SpaceContents
 {
     /// <summary>
-    ///     Contents of a space
+    ///     The pages
     /// </summary>
-    [JsonObject]
-    public class SpaceContents
-    {
-        /// <summary>
-        ///     The pages
-        /// </summary>
-        [JsonProperty("page", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public Result<Content> Pages { get; set; }
+    [JsonProperty("page", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public Result<Content> Pages { get; set; }
 
-        /// <summary>
-        ///     The blogposts
-        /// </summary>
-        [JsonProperty("blogpost", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public Result<Content> Blogposts { get; set; }
+    /// <summary>
+    ///     The blogposts
+    /// </summary>
+    [JsonProperty("blogpost", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public Result<Content> Blogposts { get; set; }
 
-        /// <summary>
-        /// The links
-        /// </summary>
-        [JsonProperty("_links", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public Links Links { get; set; }
-    }
+    /// <summary>
+    /// The links
+    /// </summary>
+    [JsonProperty("_links", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public Links Links { get; set; }
 }

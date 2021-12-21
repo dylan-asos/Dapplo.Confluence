@@ -4,24 +4,23 @@
 
 using Newtonsoft.Json;
 
-namespace Dapplo.Confluence.Entities
+namespace Dapplo.Confluence.Entities;
+
+/// <summary>
+///     For instance when using delete
+/// </summary>
+[JsonObject]
+public class LongRunningTask
 {
     /// <summary>
-    ///     For instance when using delete
+    ///     Id of the task
     /// </summary>
-    [JsonObject]
-    public class LongRunningTask
-    {
-        /// <summary>
-        ///     Id of the task
-        /// </summary>
-        [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Id { get; set; }
+    [JsonProperty("id", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Id { get; set; }
 
-        /// <summary>
-        ///     In this the link for the status is returned
-        /// </summary>
-        [JsonProperty("links", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public Links Links { get; set; }
-    }
+    /// <summary>
+    ///     In this the link for the status is returned
+    /// </summary>
+    [JsonProperty("links", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public Links Links { get; set; }
 }

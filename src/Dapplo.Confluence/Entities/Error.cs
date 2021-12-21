@@ -4,24 +4,23 @@
 
 using Newtonsoft.Json;
 
-namespace Dapplo.Confluence.Entities
+namespace Dapplo.Confluence.Entities;
+
+/// <summary>
+///     Error information
+/// </summary>
+[JsonObject]
+public class Error
 {
     /// <summary>
-    ///     Error information
+    ///     Error message from Confluence
     /// </summary>
-    [JsonObject]
-    public class Error
-    {
-        /// <summary>
-        ///     Error message from Confluence
-        /// </summary>
-        [JsonProperty("message", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public string Message { get; set; }
+    [JsonProperty("message", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public string Message { get; set; }
 
-        /// <summary>
-        ///     Confluence status code
-        /// </summary>
-        [JsonProperty("statusCode", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int StatusCode { get; set; }
-    }
+    /// <summary>
+    ///     Confluence status code
+    /// </summary>
+    [JsonProperty("statusCode", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public int StatusCode { get; set; }
 }

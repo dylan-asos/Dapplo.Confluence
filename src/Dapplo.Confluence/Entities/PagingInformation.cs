@@ -3,23 +3,22 @@
 
 using Newtonsoft.Json;
 
-namespace Dapplo.Confluence.Entities
+namespace Dapplo.Confluence.Entities;
+
+/// <summary>
+/// Contains some basic paging information
+/// </summary>
+public class PagingInformation
 {
     /// <summary>
-    /// Contains some basic paging information
+    ///     The result is limited by
     /// </summary>
-    public class PagingInformation
-    {
-        /// <summary>
-        ///     The result is limited by
-        /// </summary>
-        [JsonProperty("limit", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? Limit { get; set; }
+    [JsonProperty("limit", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public int? Limit { get; set; }
 
-        /// <summary>
-        ///     The start of the elements, this is used for paging
-        /// </summary>
-        [JsonProperty("start", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public int? Start { get; set; }
-    }
+    /// <summary>
+    ///     The start of the elements, this is used for paging
+    /// </summary>
+    [JsonProperty("start", DefaultValueHandling = DefaultValueHandling.Ignore)]
+    public int? Start { get; set; }
 }

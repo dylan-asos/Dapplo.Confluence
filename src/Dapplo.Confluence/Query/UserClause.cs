@@ -1,109 +1,104 @@
 ﻿// Copyright (c) Dapplo and contributors. All rights reserved.
 // Licensed under the MIT license. See LICENSE file in the project root for full license information.
 
-using System;
-using System.Linq;
-using Dapplo.Confluence.Entities;
+namespace Dapplo.Confluence.Query;
 
-namespace Dapplo.Confluence.Query
+/// <inheritDoc />
+internal class UserClause : IUserClause
 {
-    /// <inheritDoc />
-    internal class UserClause : IUserClause
+    private readonly Fields[] _allowedFields = { Fields.Creator, Fields.Contributor, Fields.Mention, Fields.Watcher, Fields.Favourite };
+    private readonly Clause _clause;
+    private bool _negate;
+
+    internal UserClause(Fields userField)
     {
-        private readonly Fields[] _allowedFields = { Fields.Creator, Fields.Contributor, Fields.Mention, Fields.Watcher, Fields.Favourite };
-        private readonly Clause _clause;
-        private bool _negate;
-
-        internal UserClause(Fields userField)
+        if (_allowedFields.All(field => userField != field))
         {
-            if (_allowedFields.All(field => userField != field))
-            {
-                throw new InvalidOperationException($"Can't add function for the field {userField}");
-            }
-            _clause = new Clause
-            {
-                Field = userField
-            };
+            throw new InvalidOperationException($"Can't add function for the field {userField}");
         }
-
-
-        /// <inheritDoc />
-        public IFinalClause IsCurrentUser
+        _clause = new Clause
         {
-            get
-            {
-                _clause.Value = "currentUser()";
-                if (_negate)
-                {
-                    _clause.Negate();
-                }
-                return _clause;
-            }
-        }
+            Field = userField
+        };
+    }
 
-        /// <inheritDoc />
-        public IUserClause Not
-        {
-            get
-            {
-                _negate = !_negate;
-                return this;
-            }
-        }
 
-        /// <inheritDoc />
-        public IFinalClause Is(string user)
+    /// <inheritDoc />
+    public IFinalClause IsCurrentUser
+    {
+        get
         {
-            _clause.Operator = Operators.EqualTo;
-            _clause.Value = $"\"{user}\"";
+            _clause.Value = "currentUser()";
             if (_negate)
             {
                 _clause.Negate();
             }
             return _clause;
         }
+    }
 
-        /// <inheritDoc />
-        public IFinalClause Is(User user)
+    /// <inheritDoc />
+    public IUserClause Not
+    {
+        get
         {
-            return Is(user.Username);
+            _negate = !_negate;
+            return this;
         }
+    }
 
-        /// <inheritDoc />
-        public IFinalClause In(params string[] users)
+    /// <inheritDoc />
+    public IFinalClause Is(string user)
+    {
+        _clause.Operator = Operators.EqualTo;
+        _clause.Value = $"\"{user}\"";
+        if (_negate)
         {
-            _clause.Operator = Operators.In;
-            _clause.Value = "(" + string.Join(", ", users.Select(user => $"\"{user}\"")) + ")";
-            if (_negate)
-            {
-                _clause.Negate();
-            }
-            return _clause;
+            _clause.Negate();
         }
+        return _clause;
+    }
 
+    /// <inheritDoc />
+    public IFinalClause Is(User user)
+    {
+        return Is(user.Username);
+    }
 
-        /// <inheritDoc />
-        public IFinalClause In(params User[] users)
+    /// <inheritDoc />
+    public IFinalClause In(params string[] users)
+    {
+        _clause.Operator = Operators.In;
+        _clause.Value = "(" + string.Join(", ", users.Select(user => $"\"{user}\"")) + ")";
+        if (_negate)
         {
-            return In(users.Select(user => user.Username).ToArray());
+            _clause.Negate();
         }
+        return _clause;
+    }
 
-        /// <inheritDoc />
-        public IFinalClause InCurrentUserAnd(params string[] users)
-        {
-            _clause.Operator = Operators.In;
-            _clause.Value = "(currentUser(), " + string.Join(", ", users.Select(user => $"\"{user}\"")) + ")";
-            if (_negate)
-            {
-                _clause.Negate();
-            }
-            return _clause;
-        }
 
-        /// <inheritDoc />
-        public IFinalClause InCurrentUserAnd(params User[] users)
+    /// <inheritDoc />
+    public IFinalClause In(params User[] users)
+    {
+        return In(users.Select(user => user.Username).ToArray());
+    }
+
+    /// <inheritDoc />
+    public IFinalClause InCurrentUserAnd(params string[] users)
+    {
+        _clause.Operator = Operators.In;
+        _clause.Value = "(currentUser(), " + string.Join(", ", users.Select(user => $"\"{user}\"")) + ")";
+        if (_negate)
         {
-            return InCurrentUserAnd(users.Select(user => user.Username).ToArray());
+            _clause.Negate();
         }
+        return _clause;
+    }
+
+    /// <inheritDoc />
+    public IFinalClause InCurrentUserAnd(params User[] users)
+    {
+        return InCurrentUserAnd(users.Select(user => user.Username).ToArray());
     }
 }

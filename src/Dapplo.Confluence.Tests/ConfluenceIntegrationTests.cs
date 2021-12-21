@@ -7,31 +7,30 @@ using Dapplo.Log;
 using Dapplo.Log.XUnit;
 using Xunit.Abstractions;
 
-namespace Dapplo.Confluence.Tests
+namespace Dapplo.Confluence.Tests;
+
+/// <summary>
+///     Base class for integration tests
+/// </summary>
+public abstract class ConfluenceIntegrationTests
 {
-    /// <summary>
-    ///     Base class for integration tests
-    /// </summary>
-    public abstract class ConfluenceIntegrationTests
+    // Test against a "well known" Confluence
+    private static readonly Uri TestConfluenceUri = new("https://greenshot.atlassian.net/wiki");
+
+    protected readonly IConfluenceClient ConfluenceTestClient;
+
+    protected ConfluenceIntegrationTests(ITestOutputHelper testOutputHelper)
     {
-        // Test against a "well known" Confluence
-        private static readonly Uri TestConfluenceUri = new Uri("https://greenshot.atlassian.net/wiki");
+        LogSettings.ExceptionToStacktrace = exception => exception.ToStringDemystified();
 
-        protected readonly IConfluenceClient ConfluenceTestClient;
+        LogSettings.RegisterDefaultLogger<XUnitLogger>(LogLevels.Verbose, testOutputHelper);
+        ConfluenceTestClient = ConfluenceClient.Create(TestConfluenceUri);
 
-        protected ConfluenceIntegrationTests(ITestOutputHelper testOutputHelper)
+        var username = Environment.GetEnvironmentVariable("confluence_test_username");
+        var password = Environment.GetEnvironmentVariable("confluence_test_password");
+        if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
         {
-            LogSettings.ExceptionToStacktrace = exception => exception.ToStringDemystified();
-
-            LogSettings.RegisterDefaultLogger<XUnitLogger>(LogLevels.Verbose, testOutputHelper);
-            ConfluenceTestClient = ConfluenceClient.Create(TestConfluenceUri);
-
-            var username = Environment.GetEnvironmentVariable("confluence_test_username");
-            var password = Environment.GetEnvironmentVariable("confluence_test_password");
-            if (!string.IsNullOrEmpty(username) && !string.IsNullOrEmpty(password))
-            {
-                ConfluenceTestClient.SetBasicAuthentication(username, password);
-            }
+            ConfluenceTestClient.SetBasicAuthentication(username, password);
         }
     }
 }

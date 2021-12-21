@@ -5,23 +5,22 @@ using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
 
-namespace Dapplo.Confluence.Tests
-{
-    /// <summary>
-    ///     Tests
-    /// </summary>
-    [CollectionDefinition("Dapplo.Confluence")]
-    public class ServerTests : ConfluenceIntegrationTests
-    {
-        public ServerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
-        {
-        }
+namespace Dapplo.Confluence.Tests;
 
-        [Fact]
-        public async Task Test_IsCloud()
-        {
-            var isCloudServer = await ConfluenceTestClient.IsCloudServer();
-            Assert.True(isCloudServer);
-        }
+/// <summary>
+///     Tests
+/// </summary>
+[CollectionDefinition("Dapplo.Confluence")]
+public class ServerTests : ConfluenceIntegrationTests
+{
+    public ServerTests(ITestOutputHelper testOutputHelper) : base(testOutputHelper)
+    {
+    }
+
+    [Fact]
+    public async Task Test_IsCloud()
+    {
+        var isCloudServer = await ConfluenceTestClient.IsCloudServer();
+        Assert.True(isCloudServer);
     }
 }
