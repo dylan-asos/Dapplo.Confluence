@@ -11,6 +11,10 @@ namespace Dapplo.Confluence.Entities;
 public enum CopyDestinations
 {
     /// <summary>
+    /// Some default value
+    /// </summary>
+    [EnumMember(Value = "none")] None,
+    /// <summary>
     /// Page will be copied as a child of the specified parent page
     /// </summary>
     [EnumMember(Value = "parent_page")] ParentPage,
