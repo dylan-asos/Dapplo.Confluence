@@ -339,6 +339,10 @@ public static class ContentExtensions
     /// <returns>string with the contentId</returns>
     public static async Task<string> MoveAsync(this IContentDomain confluenceClient, long contentId, Positions position, long targetContentId, CancellationToken cancellationToken = default)
     {
+        if (!await confluenceClient.IsCloudServer(cancellationToken))
+        {
+            throw new NotSupportedException("The content move operation is not supported on Confluence server, you need Confluence cloud for this.");
+        }
         var contentUri = confluenceClient.ConfluenceApiUri.AppendSegments("content", contentId, "move", position.ToString().ToLowerInvariant(), targetContentId);
 
         confluenceClient.Behaviour.MakeCurrent();
@@ -358,6 +362,10 @@ public static class ContentExtensions
     /// <returns>Content</returns>
     public static async Task<Content> CopyAsync(this IContentDomain confluenceClient, long contentId, CopyContent copyContent, IEnumerable<string> expandCopy = null, CancellationToken cancellationToken = default)
     {
+        if (!await confluenceClient.IsCloudServer(cancellationToken))
+        {
+            throw new NotSupportedException("The content copy operation is not supported on Confluence server, you need Confluence cloud for this.");
+        }
         if (copyContent is null) throw new ArgumentNullException(nameof(copyContent));
         var contentUri = confluenceClient.ConfluenceApiUri.AppendSegments("content", contentId, "copy");
 
@@ -388,7 +396,6 @@ public static class ContentExtensions
         var response = await contentUri.PutAsync<HttpResponse<Content, Error>>(content, cancellationToken).ConfigureAwait(false);
         return response.HandleErrors();
     }
-
 
     /// <summary>
     ///     Get Labels for content see <a href="https://docs.atlassian.com/confluence/REST/latest/#content/{id}/label">here</a>
