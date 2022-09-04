@@ -10,7 +10,7 @@ global using System.Collections.Generic;
 global using System.Linq;
 global using System.Text;
 
-#if NET471 || NET461
+#if NET471
 global using System.Net.Cache;
 #endif
 global using Dapplo.Log;

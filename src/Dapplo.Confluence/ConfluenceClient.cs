@@ -175,7 +175,7 @@ public class ConfluenceClient : IConfluenceClientPlugins, IAttachmentDomain, IUs
     protected IHttpBehaviour ConfigureBehaviour(IChangeableHttpBehaviour behaviour, IHttpSettings httpSettings = null)
     {
         behaviour.HttpSettings = httpSettings ?? HttpExtensionsGlobals.HttpSettings;
-#if NET471 || NET461
+#if NET471
             // Disable caching, if no HTTP settings were provided.
             // This is needed as was detected here: https://github.com/dapplo/Dapplo.Confluence/issues/11
             if (httpSettings == null)
