@@ -29,4 +29,4 @@ Your "plugin" extension will now be available, if the developer has a using stat
 For Confluence Cloud, the username & password are a bit different than for Confluence Server.
 For cloud your username is the email-address you use to login to atlassian and the PW is an API token which needs to be generated here: https://id.atlassian.com/manage/api-tokens
 
-Also the URL to use for Confluence cloud is most likely something like the following (where {domain} is your domain: https://{domain}.atlassian.net/wiki
+Also the URL to use for Confluence cloud is most likely something like the following (where {domain} is your domain): https://{domain}.atlassian.net/wiki
