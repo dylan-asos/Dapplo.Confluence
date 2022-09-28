@@ -24,3 +24,7 @@ foreach (var contentDigest in searchResult.Results)
 
 If you want to extend the API for a specific use-case where it doesn't make sense to provide it to the rest of the world via a pull-request, for example to add logic for a *plugin*, you can write an extension method to extend the IConfluenceClientPlugins.
 Your "plugin" extension will now be available, if the developer has a using statement of your namespace, on the .Plugins property of the IConfluenceClient
+
+*Hint:*
+For Confluence Cloud, the username & password are a bit different than for Confluence Server.
+For cloud your username is the email-address you use to login to atlassian and the PW is an API token which needs to be generated here: https://id.atlassian.com/manage/api-tokens
