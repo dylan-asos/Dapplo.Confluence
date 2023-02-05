@@ -83,6 +83,12 @@ public interface IConfluenceClient
 	void SetBasicAuthentication(string user, string password);
 
 	/// <summary>
+	///     Enables bearer authentication for every request following this call
+	/// </summary>
+	/// <param name="bearer">string with the bearer (personal access token) for the confluence user</param>
+	void SetBearerAuthentication(string bearer);
+
+	/// <summary>
 	/// 
 	/// </summary>
 	/// <param name="cancellationToken"></param>
