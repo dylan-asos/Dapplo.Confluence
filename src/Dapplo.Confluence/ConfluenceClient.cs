@@ -21,6 +21,11 @@ public class ConfluenceClient : IConfluenceClientPlugins, IAttachmentDomain, IUs
     private string _user;
 
     /// <summary>
+    ///     Bearer token for the bearer authentication
+    /// </summary>
+    private string _bearer;
+
+    /// <summary>
     /// 
     /// </summary>
     protected ConfluenceClient()
@@ -66,6 +71,15 @@ public class ConfluenceClient : IConfluenceClientPlugins, IAttachmentDomain, IUs
     {
         _user = user;
         _password = password;
+    }
+
+    /// <summary>
+    ///     Set Bearer Authentication for the current client
+    /// </summary>
+    /// <param name="bearer">bearer</param>
+    public void SetBearerAuthentication(string bearer)
+    {
+        _bearer = bearer;
     }
 
     /// <summary>
@@ -192,6 +206,10 @@ public class ConfluenceClient : IConfluenceClientPlugins, IAttachmentDomain, IUs
             if (!string.IsNullOrEmpty(_user) && _password != null)
             {
                 httpMessage?.SetBasicAuthorization(_user, _password);
+            }
+            if (!string.IsNullOrEmpty(_bearer))
+            {
+                httpMessage?.SetBearerAuthorization(_bearer);
             }
             return httpMessage;
         };
