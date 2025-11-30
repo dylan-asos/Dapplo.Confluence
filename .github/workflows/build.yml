@@ -34,15 +34,15 @@ jobs:
       with:
         nuget-version: '6.3.0'
 
-    - name: Setup .NET Core SDK 3.1.x
+    - name: Setup .NET Core SDK 3.1.422
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '3.1.x'
+        dotnet-version: '3.1.422'
 
-    - name: Setup .NET Core SDK 6.0.x
+    - name: Setup .NET Core SDK 6.0.400
       uses: actions/setup-dotnet@v4
       with:
-        dotnet-version: '6.0.x'
+        dotnet-version: '6.0.400'
 
     - name: Test
       run: dotnet test ${{ env.solution }} --configuration Debug /p:Platform="${{ env.buildPlatform }}" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
@@ -55,7 +55,7 @@ jobs:
 
     - name: Copy NuGet packages
       run: |
-        mkdir -p ${{ github.workspace }}/artifacts
+        New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/artifacts" | Out-Null
         Get-ChildItem -Path . -Recurse -Filter "*.nupkg" | Where-Object { $_.FullName -like "*\bin\${{ env.buildConfiguration }}\*" } | Copy-Item -Destination ${{ github.workspace }}/artifacts -Force
       shell: pwsh
 
@@ -67,7 +67,7 @@ jobs:
     - name: Upload code coverage
       uses: codecov/codecov-action@v4
       with:
-        files: src/**/coverage.*.xml
+        directory: src
         fail_ci_if_error: false
       continue-on-error: true
 
@@ -101,7 +101,7 @@ jobs:
         git config --local core.autocrlf false
         git config --local core.safecrlf false
         git checkout -b docfx
-        Remove-Item .gitignore -Force -ErrorAction SilentlyContinue
+        Remove-Item .gitignore -Force
         git add doc/_site
         git commit -m "Generated documentation for ${{ github.run_number }}"
         git subtree split --prefix doc/_site -b gh-pages
