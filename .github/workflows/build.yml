@@ -1,0 +1,135 @@
+# .NET Build and Deploy
+# Build and run tests for .NET projects.
+# Equivalent to azure-pipelines.yml
+
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!gh-pages'
+  pull_request:
+    branches:
+      - '*'
+      - '!gh-pages'
+
+env:
+  solution: '**/src/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: true
+        fetch-depth: 0
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+      with:
+        nuget-version: '6.3.0'
+
+    - name: Setup .NET Core SDK 3.1.x
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '3.1.x'
+
+    - name: Setup .NET Core SDK 6.0.x
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Test
+      run: dotnet test ${{ env.solution }} --configuration Debug /p:Platform="${{ env.buildPlatform }}" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
+      env:
+        confluence_test_username: ${{ secrets.CONFLUENCE_TEST_USERNAME }}
+        confluence_test_password: ${{ secrets.CONFLUENCE_TEST_PASSWORD }}
+
+    - name: Build
+      run: dotnet build ${{ env.solution }} --configuration ${{ env.buildConfiguration }} /p:Platform="${{ env.buildPlatform }}"
+
+    - name: Copy NuGet packages
+      run: |
+        mkdir -p ${{ github.workspace }}/artifacts
+        Get-ChildItem -Path . -Recurse -Filter "*.nupkg" | Where-Object { $_.FullName -like "*\bin\${{ env.buildConfiguration }}\*" } | Copy-Item -Destination ${{ github.workspace }}/artifacts -Force
+      shell: pwsh
+
+    - name: Copy coverage files
+      run: |
+        Get-ChildItem -Path . -Recurse -Filter "coverage.*" | Copy-Item -Destination ${{ github.workspace }}/artifacts -Force
+      shell: pwsh
+
+    - name: Upload code coverage
+      uses: codecov/codecov-action@v4
+      with:
+        files: src/**/coverage.*.xml
+        fail_ci_if_error: false
+      continue-on-error: true
+
+    - name: Install DocFX
+      run: choco install docfx -y
+
+    - name: Build documentation with DocFX
+      run: |
+        docfx doc/docfx.json
+        if ($LASTEXITCODE -ne 0) {
+          throw "Error generating docfx document"
+        }
+      shell: pwsh
+
+    - name: Copy documentation to artifacts
+      run: |
+        Copy-Item -Path "${{ github.workspace }}/doc/_site" -Destination "${{ github.workspace }}/artifacts/site" -Recurse -Force
+      shell: pwsh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: drop
+        path: ${{ github.workspace }}/artifacts
+
+    - name: Publish documentation to gh-pages
+      if: github.event_name != 'pull_request'
+      run: |
+        git config --local user.name "Robin Krom"
+        git config --local user.email "robin@dapplo.net"
+        git config --local core.autocrlf false
+        git config --local core.safecrlf false
+        git checkout -b docfx
+        Remove-Item .gitignore -Force -ErrorAction SilentlyContinue
+        git add doc/_site
+        git commit -m "Generated documentation for ${{ github.run_number }}"
+        git subtree split --prefix doc/_site -b gh-pages
+        git push -f origin gh-pages:gh-pages
+      shell: pwsh
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    if: github.event_name != 'pull_request'
+    environment: NuGet
+
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: drop
+        path: ${{ github.workspace }}/drop
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+      with:
+        nuget-version: '6.3.0'
+
+    - name: Push NuGet packages
+      run: |
+        $packages = Get-ChildItem -Path "${{ github.workspace }}/drop" -Filter "*.nupkg" | Where-Object { $_.Name -notlike "*.symbols.nupkg" }
+        foreach ($package in $packages) {
+          nuget push $package.FullName -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_API_KEY }} -SkipDuplicate
+        }
+      shell: pwsh
