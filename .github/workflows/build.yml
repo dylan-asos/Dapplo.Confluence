@@ -46,14 +46,8 @@ jobs:
       with:
         dotnet-version: '6.0.400'
 
-    - name: Test
-      run: dotnet test ${{ env.solution }} --configuration Debug /p:Platform="${{ env.buildPlatform }}" /p:CollectCoverage=true /p:CoverletOutputFormat=cobertura
-      env:
-        confluence_test_username: ${{ secrets.CONFLUENCE_TEST_USERNAME }}
-        confluence_test_password: ${{ secrets.CONFLUENCE_TEST_PASSWORD }}
-
     - name: Build
-      run: dotnet build ${{ env.solution }} --configuration ${{ env.buildConfiguration }} /p:Platform="${{ env.buildPlatform }}"
+      run: dotnet build ./src/Dapplo.Confluence.sln --configuration ${{ env.buildConfiguration }} /p:Platform="${{ env.buildPlatform }}"
 
     - name: Copy NuGet packages
       run: |
@@ -94,21 +88,6 @@ jobs:
       with:
         name: drop
         path: ${{ github.workspace }}/artifacts
-
-    - name: Publish documentation to gh-pages
-      if: github.event_name != 'pull_request'
-      run: |
-        git config --local user.name "Robin Krom"
-        git config --local user.email "robin@dapplo.net"
-        git config --local core.autocrlf false
-        git config --local core.safecrlf false
-        git checkout -b docfx
-        Remove-Item .gitignore -Force
-        git add doc/_site
-        git commit -m "Generated documentation for ${{ github.run_number }}"
-        git subtree split --prefix doc/_site -b gh-pages
-        git push -f origin gh-pages:gh-pages
-      shell: pwsh
 
   deploy:
     runs-on: windows-latest
