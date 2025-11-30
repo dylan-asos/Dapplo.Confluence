@@ -103,7 +103,7 @@ foreach (var contentDigest in searchResult.Results)
     );
     
     Console.WriteLine($"Title: {content.Title}");
-    Console.WriteLine($"Body: {content.Body.Storage.Value}");
+    Console.WriteLine($"Body: {content.Body?.Storage?.Value}");
 }
 ```
 
@@ -132,6 +132,7 @@ var content = await confluenceClient.Content.GetAsync(contentId);
 
 // Update existing content
 content.Body.Storage.Value = "<p>Updated content</p>";
+// Confluence requires incrementing the version number for updates to prevent conflicts
 content.Version.Number++;
 await confluenceClient.Content.UpdateAsync(content);
 
