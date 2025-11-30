@@ -1,0 +1,118 @@
+# .NET Build and Deploy
+# Build and run tests for .NET projects.
+# Equivalent to azure-pipelines.yml
+
+name: Build and Deploy
+
+on:
+  push:
+    branches:
+      - '*'
+      - '!gh-pages'
+  pull_request:
+    branches:
+      - '*'
+      - '!gh-pages'
+
+env:
+  solution: '**/src/*.sln'
+  buildPlatform: 'Any CPU'
+  buildConfiguration: 'Release'
+
+jobs:
+  build:
+    runs-on: windows-latest
+    permissions:
+      contents: write  # Required for pushing to gh-pages branch
+
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: true
+        fetch-depth: 0
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+      with:
+        nuget-version: '6.3.0'
+
+    - name: Setup .NET Core SDK 3.1.422
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '3.1.422'
+
+    - name: Setup .NET Core SDK 6.0.400
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: '6.0.400'
+
+    - name: Build
+      run: dotnet build ./src/Dapplo.Confluence.sln --configuration ${{ env.buildConfiguration }} /p:Platform="${{ env.buildPlatform }}"
+
+    - name: Copy NuGet packages
+      run: |
+        New-Item -ItemType Directory -Force -Path "${{ github.workspace }}/artifacts" | Out-Null
+        Get-ChildItem -Path . -Recurse -Filter "*.nupkg" | Where-Object { $_.FullName -like "*\bin\${{ env.buildConfiguration }}\*" } | Copy-Item -Destination ${{ github.workspace }}/artifacts -Force
+      shell: pwsh
+
+    - name: Copy coverage files
+      run: |
+        Get-ChildItem -Path . -Recurse -Filter "coverage.*" | Copy-Item -Destination ${{ github.workspace }}/artifacts -Force
+      shell: pwsh
+
+    - name: Upload code coverage
+      uses: codecov/codecov-action@v4
+      with:
+        directory: src
+        fail_ci_if_error: false
+      continue-on-error: true
+
+    - name: Install DocFX
+      run: choco install docfx -y
+
+    - name: Build documentation with DocFX
+      run: |
+        docfx doc/docfx.json
+        if ($LASTEXITCODE -ne 0) {
+          throw "Error generating docfx document"
+        }
+      shell: pwsh
+
+    - name: Copy documentation to artifacts
+      run: |
+        Copy-Item -Path "${{ github.workspace }}/doc/_site" -Destination "${{ github.workspace }}/artifacts/site" -Recurse -Force
+      shell: pwsh
+
+    - name: Upload artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: drop
+        path: ${{ github.workspace }}/artifacts
+
+  deploy:
+    runs-on: windows-latest
+    needs: build
+    if: github.event_name != 'pull_request'
+    environment: NuGet
+    permissions:
+      contents: read  # Minimal permissions for downloading artifacts
+
+    steps:
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        name: drop
+        path: ${{ github.workspace }}/drop
+
+    - name: Setup NuGet
+      uses: NuGet/setup-nuget@v2
+      with:
+        nuget-version: '6.3.0'
+
+    - name: Push NuGet packages
+      run: |
+        $packages = Get-ChildItem -Path "${{ github.workspace }}/drop" -Filter "*.nupkg" | Where-Object { $_.Name -notlike "*.symbols.nupkg" }
+        foreach ($package in $packages) {
+          nuget push $package.FullName -Source https://api.nuget.org/v3/index.json -ApiKey ${{ secrets.NUGET_API_KEY }} -SkipDuplicate
+        }
+      shell: pwsh
